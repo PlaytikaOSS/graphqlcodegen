@@ -1,26 +1,23 @@
-name: Publish package to the Maven Central Repository
+name: Publish to Maven Central
+
 on:
   release:
     types: [published]
+
+permissions: {}
+
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Import GPG Key
-        uses: crazy-max/ghaction-import-gpg@subkey
-        with:
-          gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
-          passphrase: ${{ secrets.GPG_PASSPHRASE }}
-      - name: Set up Maven Central Repository
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
-          server-id: ossrh
-          server-username: MAVEN_USERNAME
-          server-password: MAVEN_PASSWORD
-      - name: Publish package
-        run: mvn --batch-mode deploy
-        env:
-          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
-          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
+  release:
+    uses: PlaytikaOSS/playtika-workflows/.github/workflows/maven-central-release.yml@414efe1258d11ba5dcd2f9de4a9fcf82bd915c38
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+      attestations: write
+    with:
+      workflow-sha: 414efe1258d11ba5dcd2f9de4a9fcf82bd915c38
+      group-id: com.playtika.graphqlcodegen
+      release-branch: main
+      java-version: '8'
+      tag-prefix: 'graphqlcodegen-maven-plugin-'
+      version-components: 2
